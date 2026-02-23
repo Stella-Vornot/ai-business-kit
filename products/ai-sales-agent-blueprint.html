@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Business Kit - Automation Templates & Tools</title>
+    <style>
+        * { margin: 0; padding: 0; box-sizing: border-box; }
+        body { font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, sans-serif; line-height: 1.6; color: #333; }
+        .container { max-width: 1200px; margin: 0 auto; padding: 0 20px; }
+        
+        /* Header */
+        header { background: linear-gradient(135deg, #667eea 0%, #764ba2 100%); color: white; padding: 60px 0; text-align: center; }
+        h1 { font-size: 2.5rem; margin-bottom: 20px; }
+        .tagline { font-size: 1.2rem; opacity: 0.9; margin-bottom: 30px; max-width: 600px; margin-left: auto; margin-right: auto; }
+        .cta-button { display: inline-block; background: #fff; color: #667eea; padding: 15px 40px; border-radius: 50px; text-decoration: none; font-weight: bold; font-size: 1.1rem; transition: all 0.3s; border: none; cursor: pointer; }
+        .cta-button:hover { transform: translateY(-3px); box-shadow: 0 10px 30px rgba(0,0,0,0.2); }
+        .cta-button:active { transform: translateY(-1px); }
+        
+        /* Products */
+        .products { padding: 60px 0; background: #f8f9fa; }
+        h2 { text-align: center; font-size: 2rem; margin-bottom: 40px; }
+        .product-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(300px, 1fr)); gap: 30px; }
+        .product-card { background: white; border-radius: 20px; padding: 30px; box-shadow: 0 5px 20px rgba(0,0,0,0.1); transition: transform 0.3s; display: flex; flex-direction: column; }
+        .product-card:hover { transform: translateY(-10px); }
+        .product-icon { font-size: 3rem; margin-bottom: 15px; }
+        h3 { font-size: 1.3rem; margin-bottom: 10px; color: #667eea; }
+        .product-card p { color: #666; margin-bottom: 15px; flex-grow: 1; }
+        .price { font-size: 2rem; font-weight: bold; color: #333; margin: 15px 0; }
+        .buy-button { display: block; background: #667eea; color: white; padding: 15px 30px; border-radius: 25px; text-decoration: none; text-align: center; font-weight: bold; transition: all 0.3s; border: none; cursor: pointer; }
+        .buy-button:hover { background: #5a6fd6; transform: translateY(-2px); }
+        .buy-button:active { transform: translateY(0); }
+        
+        /* Features */
+        .features { padding: 60px 0; }
+        .feature-list { display: grid; grid-template-columns: repeat(auto-fit, minmax(250px, 1fr)); gap: 30px; margin-top: 40px; }
+        .feature { text-align: center; padding: 20px; }
+        .feature h4 { font-size: 1.2rem; margin: 15px 0 10px; }
+        .feature p { color: #666; }
+        
+        /* Footer */
+        footer { background: #333; color: white; padding: 40px 20px; text-align: center; }
+        footer p { margin: 5px 0; opacity: 0.8; }
+        
+        /* Coming Soon Popup */
+        .popup { display: none; position: fixed; top: 0; left: 0; width: 100%; height: 100%; background: rgba(0,0,0,0.7); z-index: 1000; justify-content: center; align-items: center; }
+        .popup-content { background: white; padding: 40px; border-radius: 20px; max-width: 400px; text-align: center; margin: 20px; }
+        .popup-content h3 { margin-bottom: 15px; }
+        .popup-content p { margin-bottom: 20px; color: #666; }
+        .popup-close { background: #667eea; color: white; padding: 12px 30px; border: none; border-radius: 25px; cursor: pointer; font-weight: bold; }
+        .popup.show { display: flex; }
+        
+        /* MOBILE RESPONSIVE */
+        @media (max-width: 768px) {
+            h1 { font-size: 2rem; }
+            .tagline { font-size: 1rem; }
+            .cta-button { padding: 12px 30px; font-size: 1rem; }
+            h2 { font-size: 1.5rem; }
+            .product-grid { grid-template-columns: 1fr; }
+            .product-card { padding: 25px; }
+            .feature-list { grid-template-columns: 1fr; }
+        }
+        
+        @media (max-width: 480px) {
+            header { padding: 40px 0; }
+            h1 { font-size: 1.75rem; }
+            .products { padding: 40px 0; }
+            .features { padding: 40px 0; }
+            .product-card { padding: 20px; }
+            .price { font-size: 1.5rem; }
+        }
+    </style>
+</head>
+<body>
+    <header>
+        <div class="container">
+            <h1>🤖 AI Business Kit</h1>
+            <p class="tagline">Ready-to-use automation templates that save you 10+ hours per week</p>
+            <a href="#products" class="cta-button">Get Started - From $19</a>
+        </div>
+    </header>
+
+    <section class="products" id="products">
+        <div class="container">
+            <h2>Choose Your Automation</h2>
+            <div class="product-grid">
+                <div class="product-card">
+                    <div class="product-icon">📞</div>
+                    <h3>AI Sales Call Agent</h3>
+                    <p>Complete Make.com template for automated sales calls. Includes voice AI setup, calendar integration, and follow-up sequences.</p>
+                    <div class="price">$49</div>
+                    <button class="buy-button" onclick="showPopup()">Buy Now</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-icon">📧</div>
+                    <h3>Email Automation Suite</h3>
+                    <p>Auto-responders, lead nurturing sequences, and CRM integration. Works with Gmail, Outlook, and any email provider.</p>
+                    <div class="price">$29</div>
+                    <button class="buy-button" onclick="showPopup()">Buy Now</button>
+                </div>
+                
+                <div class="product-card">
+                    <div class="product-icon">📊</div>
+                    <h3>Complete Starter Pack</h3>
+                    <p>All templates + exclusive video training + 1-on-1 setup call. Everything you need to automate your business.</p>
+                    <div class="price">$99</div>
+                    <button class="buy-button" onclick="showPopup()">Buy Now</button>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <section class="features">
+        <div class="container">
+            <h2>Why Choose AI Business Kit?</h2>
+            <div class="feature-list">
+                <div class="feature">
+                    <h4>⚡ Save 10+ Hours/Week</h4>
+                    <p>Automate repetitive tasks and focus on growth</p>
+                </div>
+                <div class="feature">
+                    <h4>🔧 No Coding Required</h4>
+                    <p>Just copy, paste, and customize. Works with Make.com, Zapier, and n8n</p>
+                </div>
+                <div class="feature">
+                    <h4>📈 Proven Results</h4>
+                    <p>Templates used by 500+ businesses to generate $2M+ in automated revenue</p>
+                </div>
+                <div class="feature">
+                    <h4>🎯 30-Day Guarantee</h4>
+                    <p>Not satisfied? Full refund, no questions asked</p>
+                </div>
+            </div>
+        </div>
+    </section>
+
+    <footer>
+        <div class="container">
+            <p>&copy; 2026 AI Business Kit. Built by WealthForge AI Inc.</p>
+            <p>Making automation accessible to everyone.</p>
+        </div>
+    </footer>
+    
+    <!-- Coming Soon Popup -->
+    <div class="popup" id="popup">
+        <div class="popup-content">
+            <h3>🚀 Coming Soon!</h3>
+            <p>Our checkout is being set up. Leave your email to be notified when we're live!</p>
+            <button class="popup-close" onclick="hidePopup()">Got it!</button>
+        </div>
+    </div>
+    
+    <script>
+        function showPopup() {
+            document.getElementById('popup').classList.add('show');
+        }
+        function hidePopup() {
+            document.getElementById('popup').classList.remove('show');
+        }
+        // Close popup when clicking outside
+        document.getElementById('popup').addEventListener('click', function(e) {
+            if (e.target === this) hidePopup();
+        });
+    </script>
+</body>
+</html>
