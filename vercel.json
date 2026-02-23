@@ -1,0 +1,7 @@
+{
+  "rewrites": [
+    { "source": "/products/:path*", "destination": "/:path*.html" },
+    { "source": "/(.*)", "destination": "/$1.html" }
+  ],
+  "cleanUrls": true
+}
