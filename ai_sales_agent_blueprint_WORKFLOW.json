@@ -1,0 +1,220 @@
+{
+  "name": "AI Sales Agent Workflow",
+  "version": "1.0",
+  "description": "Complete Make.com scenario for automated sales calls with AI qualification and calendar booking",
+  "modules": [
+    {
+      "id": 1,
+      "type": "webhook",
+      "name": "Lead Form Submission",
+      "config": {
+        "webhook": "{{webhook_url}}",
+        "method": "POST",
+        "parseJson": true
+      }
+    },
+    {
+      "id": 2,
+      "type": "airtable",
+      "name": "Create Lead Record",
+      "config": {
+        "baseId": "{{airtable_base_id}}",
+        "table": "Leads",
+        "fields": {
+          "Name": "{{1.name}}",
+          "Email": "{{1.email}}",
+          "Phone": "{{1.phone}}",
+          "Company": "{{1.company}}",
+          "Status": "New",
+          "Source": "{{1.utm_source}}",
+          "Date": "{{now}}"
+        }
+      }
+    },
+    {
+      "id": 3,
+      "type": "http",
+      "name": "VAPI - Make AI Call",
+      "config": {
+        "url": "https://api.vapi.ai/call",
+        "method": "POST",
+        "headers": {
+          "Authorization": "Bearer {{vapi_api_key}}",
+          "Content-Type": "application/json"
+        },
+        "body": {
+          "assistantId": "{{vapi_assistant_id}}",
+          "customer": {
+            "number": "{{1.phone}}",
+            "name": "{{1.name}}"
+          },
+          "metadata": {
+            "leadId": "{{2.id}}",
+            "email": "{{1.email}}",
+            "company": "{{1.company}}"
+          }
+        }
+      }
+    },
+    {
+      "id": 4,
+      "type": "sleep",
+      "name": "Wait for Call Completion",
+      "config": {
+        "delay": 300
+      }
+    },
+    {
+      "id": 5,
+      "type": "http",
+      "name": "Get Call Results",
+      "config": {
+        "url": "https://api.vapi.ai/call/{{3.callId}}",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{vapi_api_key}}"
+        }
+      }
+    },
+    {
+      "id": 6,
+      "type": "router",
+      "name": "Qualified?",
+      "routes": [
+        {
+          "name": "Qualified",
+          "condition": "{{5.analysis.qualified}} == true",
+          "next": 7
+        },
+        {
+          "name": "Not Qualified",
+          "condition": "{{5.analysis.qualified}} == false",
+          "next": 14
+        }
+      ]
+    },
+    {
+      "id": 7,
+      "type": "airtable",
+      "name": "Update - Qualified",
+      "config": {
+        "baseId": "{{airtable_base_id}}",
+        "table": "Leads",
+        "recordId": "{{2.id}}",
+        "fields": {
+          "Status": "Qualified",
+          "Call Notes": "{{5.analysis.summary}}",
+          "Interest Level": "{{5.analysis.interest}}",
+          "Timeline": "{{5.analysis.timeline}}"
+        }
+      }
+    },
+    {
+      "id": 8,
+      "type": "http",
+      "name": "Check Calendar Availability",
+      "config": {
+        "url": "https://api.calendly.com/event_type_available_times",
+        "method": "GET",
+        "headers": {
+          "Authorization": "Bearer {{calendly_token}}"
+        },
+        "query": {
+          "event_type": "{{calendly_event_uuid}}",
+          "start_time": "{{now}}",
+          "end_time": "{{addDays(now; 7)}}"
+        }
+      }
+    },
+    {
+      "id": 9,
+      "type": "mailchimp",
+      "name": "Send Booking Email",
+      "config": {
+        "server": "{{mailchimp_server}}",
+        "listId": "{{mailchimp_list_id}}",
+        "template": "booking_invitation",
+        "to": "{{1.email}}",
+        "mergeFields": {
+          "FNAME": "{{1.name}}",
+          "BOOKING_LINK": "{{calendly_link}}",
+          "CALL_SUMMARY": "{{5.analysis.summary}}"
+        }
+      }
+    },
+    {
+      "id": 10,
+      "type": "gmail",
+      "name": "Notify Sales Team",
+      "config": {
+        "to": "{{sales_team_email}}",
+        "subject": "🔥 New Qualified Lead: {{1.name}}",
+        "body": "New qualified lead from AI agent:\n\nName: {{1.name}}\nCompany: {{1.company}}\nEmail: {{1.email}}\nPhone: {{1.phone}}\n\nCall Summary: {{5.analysis.summary}}\nInterest: {{5.analysis.interest}}/10\nTimeline: {{5.analysis.timeline}}\n\nView in Airtable: {{airtable_record_url}}"
+      }
+    },
+    {
+      "id": 11,
+      "type": "sleep",
+      "name": "Wait 2 Days",
+      "config": {
+        "delay": 172800
+      }
+    },
+    {
+      "id": 12,
+      "type": "airtable",
+      "name": "Check if Booked",
+      "config": {
+        "baseId": "{{airtable_base_id}}",
+        "table": "Leads",
+        "recordId": "{{2.id}}",
+        "fields": ["Meeting Booked"]
+      }
+    },
+    {
+      "id": 13,
+      "type": "filter",
+      "name": "Not Booked?",
+      "condition": "{{12.fields.Meeting Booked}} != true",
+      "next": 15
+    },
+    {
+      "id": 14,
+      "type": "airtable",
+      "name": "Update - Not Qualified",
+      "config": {
+        "baseId": "{{airtable_base_id}}",
+        "table": "Leads",
+        "recordId": "{{2.id}}",
+        "fields": {
+          "Status": "Not Qualified",
+          "Reason": "{{5.analysis.notQualifiedReason}}",
+          "Call Notes": "{{5.analysis.summary}}"
+        }
+      }
+    },
+    {
+      "id": 15,
+      "type": "mailchimp",
+      "name": "Send Follow-up Email",
+      "config": {
+        "server": "{{mailchimp_server}}",
+        "listId": "{{mailchimp_list_id}}",
+        "template": "followup_nurture",
+        "to": "{{1.email}}",
+        "mergeFields": {
+          "FNAME": "{{1.name}}",
+          "BOOKING_LINK": "{{calendly_link}}"
+        }
+      }
+    }
+  ],
+  "settings": {
+    "sequential": true,
+    "maxErrors": 3,
+    "errorHandler": {
+      "type": "email",
+      "to": "{{admin_email}}"
+    }
+  }
+}
